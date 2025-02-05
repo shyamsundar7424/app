@@ -1,10 +1,19 @@
-# Node modules
 node_modules/
-
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
+.env
+.env.local
+.env.development
+.env.production
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+coverage/
+build/
+dist/
+public/build/
+package-lock.json  # Or yarn.lock, but not both
+.cache/
+.parcel-cache/
+.eslintcache
+# Example custom ignore:
+large-dataset.csv  # This file is too big to track in Git

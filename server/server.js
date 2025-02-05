@@ -3,16 +3,21 @@ import mongoose from 'mongoose';
 import 'dotenv/config';
 import bcrypt from 'bcrypt';
 import User from './Schema/User.js';
-import { nanoid } from 'nanoid';
+import jwt from 'jsonwebtoken';
+import cors from 'cors';
+
+
+
 
 const server = express();
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;
 
 const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
 const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
 
 // Middleware to parse JSON data
 server.use(express.json());
+server.use(cors());
 
 // Connect to MongoDB
 mongoose.connect(process.env.DB_LOCATION, {
@@ -26,7 +31,11 @@ mongoose.connect(process.env.DB_LOCATION, {
 });
 
 const formatDataSend = (user) => {
+ 
+  const access_token = jwt.sign({id:user._id }, process.env.SECRET_ACCESS_KEY )
+
   return {
+    access_token,
     profile_img: user.personal_info.profile_img,
     username: user.personal_info.username,
     fullname: user.personal_info.fullname,
@@ -88,7 +97,7 @@ server.post("/signup", async (req, res) => {
 });
 
 // Signin route
-server.post("/signin", (req, res) => {
+server.post("/signin", async (req, res) => {
   const { email, password } = req.body;
 
   // Validate the data from frontend
@@ -96,7 +105,24 @@ server.post("/signin", (req, res) => {
     return res.status(403).json({ "error": "Email and password are required" });
   }
 
-  return res.status(200).json({ "Status": "Success" });
+  try {
+    const user = await User.findOne({ "personal_info.email": email });
+
+    if (!user) {
+      return res.status(403).json({ "error": "Invalid email or password" });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.personal_info.password);
+
+    if (!isPasswordValid) {
+      return res.status(403).json({ "error": "Incorrect  password" });
+    }
+
+    return res.status(200).json(formatDataSend(user));
+  } catch (error) {
+    console.log("Error -> ", error);
+    return res.status(500).json({ "error": "Internal Server Error" });
+  }
 });
 
 // Listen on the specified port
