@@ -16,7 +16,7 @@ const server = express();
 const PORT = 5000;
 
 // ✅ Fix: Import JSON file correctly
-const serviceAccountKey = JSON.parse(fs.readFileSync("./blogging-app-4c3ec-firebase-adminsdk-fbsvc-a13b67993c.json", "utf8"));
+const serviceAccountKey = JSON.parse(fs.readFileSync("./blogging-app-4c3ec-firebase-adminsdk-fbsvc-f3fc3ee1e7.json", "utf8"));
 
 // ✅ Initialize Firebase Admin SDK
 admin.initializeApp({
