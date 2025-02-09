@@ -7,16 +7,18 @@ import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
 import { UserContext } from "../App";
 import { storeInSession } from "../common/session";
+import { authWithGoogle } from "../common/firebase";
 
 
 const UserAuthForm = ({ type }) => {
    
    const authForm = useRef();
 
-  let { userAuth:{access_token}, setUserAuth } = useContext(UserContext);
-  
+   const { userAuth:{access_token}, setUserAuth } = useContext(UserContext);
+   
+
   console.log(access_token);
-  const userAuthThroughServer = async (serverRoute, formData) => {
+  const userAuthThroughServer = (serverRoute, formData) => {
     axios.post(import.meta.env.VITE_SERVER_DOMAIN + serverRoute, formData)
       .then(({ data }) => {
         
@@ -58,6 +60,22 @@ const UserAuthForm = ({ type }) => {
 
     userAuthThroughServer(serverRoute, formData);
   };
+   
+  const handleGoogleAuth = async (e) => {
+    e.preventDefault();
+    authWithGoogle().then(async (user) => {
+      // Get Firebase ID token
+      const idToken = await user.getIdToken(); 
+  
+      let serverRoute = "/google-auth";
+      let formData = { access_token: idToken }; // Send Firebase ID token
+      userAuthThroughServer(serverRoute, formData);
+    })
+    .catch(err => {
+      toast.error('Trouble logging in through Google');
+      console.error(err);
+    });
+  };
 
   return (
     access_token ? <Navigate to="/" /> :
@@ -86,10 +104,10 @@ const UserAuthForm = ({ type }) => {
               <hr className="w-1/2 border-black" />
             </div>
 
-            <button className="btn-dark flex items-center justify-center gap-4 w-[90%] center">
-              <img src={googleIcon} className="w-5" alt="Google Icon" />
-              Continue with Google
-            </button>
+            <button className="btn-dark flex items-center justify-center gap-4 w-[90%] center" onClick={handleGoogleAuth}>
+            <img src={googleIcon} className="w-5" alt="Google Icon" />
+            Continue with Google
+          </button>
 
             {type === "sign-in" ? (
               <p className="mt-6 text-dark-grey text-xl text-center">
@@ -111,5 +129,4 @@ const UserAuthForm = ({ type }) => {
       </AnimationWrapper>
   );
 };
-
 export default UserAuthForm;
