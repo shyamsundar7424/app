@@ -3,11 +3,24 @@ import logo from "../imgs/logo.png";
 import { Link,Outlet } from "react-router-dom";
 import { useState } from "react";
 import { UserContext } from "../App";
+import UserNavigationPanel from "./user-navigation.component";
 
 const Navbar = () => {
   const [searchBoxVisibility, setSearchBoxVisibility] = useState(false);
-  
+  const [userNavPanel,  serUserNavPanel ] = useState(false);
+
+
   const { userAuth, userAuth:{ access_token, profile_img}} = useContext(UserContext);
+ 
+  const handleUserNavPanel = () =>{
+    serUserNavPanel(currentVal => !currentVal)
+  }
+ const handleBlur = () =>{
+  setTimeout(() => {
+    serUserNavPanel(false)
+  },200)
+ }
+
 
   return (
     <>
@@ -55,10 +68,19 @@ const Navbar = () => {
              <Link to="/dashboard/notification">
               <button className="w-12 h-12 rounded-full bg-grey relative
               hover:bg-black/10">
-
+                <i className="fi fi-rr-bell text-2xl black mt-1"></i>
               </button>
+             </Link> {/* onBlue are use in when we click anther place sigout div are close*/}
+             <div className="relative" onClick={handleUserNavPanel} onBlur={handleBlur}> 
+                <button className="w-12 h-12 mt-1 ">
+                   <img src={profile_img} className="w-full h-full object-cover rounded-full"/>
+                </button>
+
+                {
+                  userNavPanel ? < UserNavigationPanel /> : ""  
+                }
                 
-             </Link>
+             </div>
           </>
         :
         <>
