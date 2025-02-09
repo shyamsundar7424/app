@@ -1,46 +1,43 @@
 import mongoose, { Schema } from "mongoose";
 
-const notificationSchema = mongoose.Schema({
-    type: {
-        type: String,
-        enum: ["like", "comment", "reply"],
-        required: true
-    },
-    blog: {
+const commentSchema = mongoose.Schema({
+    
+    blog_id: {
         type: Schema.Types.ObjectId,
         required: true,
         ref: 'blogs'
     },
-    notification_for: {
+    blog_author: {
         type: Schema.Types.ObjectId,
         required: true,
-        ref: 'users'
-    },
-    user: {
-        type: Schema.Types.ObjectId,
-        required: true,
-        ref: 'users'
+        ref: 'blogs',
     },
     comment: {
-        type: Schema.Types.ObjectId,
+        type: String,
+        required: true
+    },
+    children: {
+        type: [Schema.Types.ObjectId],
         ref: 'comments'
     },
-    reply: {
+    commented_by: {
         type: Schema.Types.ObjectId,
-        ref: 'comments'
-    }, 
-    replied_on_comment:{
-        type: Schema.Types.ObjectId,
-        ref: 'comments'
+        require: true,
+        ref: 'users'
     },
-    seen: {
+    isReply: {
         type: Boolean,
-        default: false
+    },
+    parent: {
+        type: Schema.Types.ObjectId,
+        ref: 'comments'
     }
+
 },
 {
-    timestamps: true
-}
-)
+    timestamps: {
+        createdAt: 'commentedAt'
+    }
+})
 
-export default mongoose.model("notification", notificationSchema)
+export default mongoose.model("comments", commentSchema)
