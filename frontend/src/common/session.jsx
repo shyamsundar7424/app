@@ -1,6 +1,5 @@
 export const storeInSession = (key, value) => {
-    sessionStorage.setItem(key, JSON.stringify(value));
-    console.log(`Stored in session: ${key} =`, JSON.parse(sessionStorage.getItem(key)));
+    sessionStorage.setItem(key, value);
 };
 
 
