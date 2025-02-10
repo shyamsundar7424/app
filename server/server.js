@@ -9,7 +9,7 @@ import admin from "firebase-admin";
 import fs from 'fs';
 import { getAuth } from "firebase-admin/auth";
 
-// ✅ Load environment variables
+//  Load environment variables
 dotenv.config();
 
 const server = express();
