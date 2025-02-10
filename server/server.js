@@ -75,9 +75,13 @@ const generateUsername = async (email) => {
 server.post("/signup", async (req, res) => {
   const { fullname, email, password } = req.body;
 
-  if (fullname.length < 3) {
-    return res.status(403).json({ error: "Fullname must be at least 3 letters long" });
-  }
+  if (!fullname) {
+    return res.status(400).json({ error: 'Fullname is required' });
+}
+
+if (fullname.length < 3) {
+    return res.status(400).json({ error: 'Fullname must be at least 3 characters long' });
+}
   if (!email || !emailRegex.test(email)) {
     return res.status(403).json({ error: "Enter a valid Email" });
   }
